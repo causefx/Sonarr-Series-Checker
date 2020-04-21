@@ -12,4 +12,4 @@ RUN apk add --no-cache \
 	nodejs-current \
 	&& npm install
 
-CMD sh /app/sonarrChecker
+CMD sh /app/SonarrChecker
