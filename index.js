@@ -3,6 +3,7 @@ const url = require('url');
 const debug = require('debug')('sonarrStatus');
 const SonarrAPI = require('sonarr-api');
 const argv = require('minimist')(process.argv.slice(2));
+process.env.DEBUG = true;
 
 const options = {
     "url": argv.u || false,
@@ -20,7 +21,6 @@ if(options.perform_action) debug('Action variable found - Will perform Update on
 if(!options.perform_action) debug('Action variable not found - Will skip Update on Sonarr Series');
 if(options.discord_webhook) debug('Discord variable found - Will send Discord messages')
 if(!options.discord_webhook) debug('Discord variable not found - Will skip Discord messages');
-
 const sonarrURL = qualifyURL(options.url, true);
 const sonarr = new SonarrAPI({
     hostname: sonarrURL.host,
