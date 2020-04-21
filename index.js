@@ -1,9 +1,10 @@
+process.env.DEBUG = '*';
+
 const { Webhook, MessageBuilder } = require('discord-webhook-node');
 const url = require('url');
 const debug = require('debug')('sonarrStatus');
 const SonarrAPI = require('sonarr-api');
 const argv = require('minimist')(process.argv.slice(2));
-process.env.DEBUG = true;
 
 const options = {
     "url": argv.u || false,
@@ -28,6 +29,7 @@ const sonarr = new SonarrAPI({
     port: sonarrURL.port,
     urlBase: sonarrURL.path
 });
+
 let promise = Promise.resolve();
 // get Sonarr Series
 sonarr.get("series").then(function (result) {
