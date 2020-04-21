@@ -63,7 +63,7 @@ sonarr.get("series").then(function (result) {
                                 webhookShitSeries(series['monitored'][key]['title'], msg, image),
                                 series['monitored'][key].monitored = false,
                                 toggleSeries(series['monitored'][key]),
-                                console.log(msg + '... '+series['monitored'][key]['title'] + ' | Files/Eps: ' + series['monitored'][key]['episodeFileCount'] + '/' + series['monitored'][key]['episodeCount'])
+                                debug(msg + '... '+series['monitored'][key]['title'] + ' | Files/Eps: ' + series['monitored'][key]['episodeFileCount'] + '/' + series['monitored'][key]['episodeCount'])
                             );
                         }, options.perform_action ? 5000 : 1000);
                     })
@@ -85,7 +85,7 @@ sonarr.get("series").then(function (result) {
                                 webhookShitSeries(series['unmonitored'][key]['title'], msg, ''),
                                 series['unmonitored'][key].monitored = true,
                                 toggleSeries(series['unmonitored'][key]),
-                                console.log(msg + '... '+series['unmonitored'][key]['title'] + ' | Files/Eps: ' + series['unmonitored'][key]['episodeFileCount'] + '/' + series['unmonitored'][key]['episodeCount'])
+                                debug(msg + '... '+series['unmonitored'][key]['title'] + ' | Files/Eps: ' + series['unmonitored'][key]['episodeFileCount'] + '/' + series['unmonitored'][key]['episodeCount'])
                             );
                         }, options.perform_action ? 5000 : 1000);
                     })
@@ -98,7 +98,6 @@ sonarr.get("series").then(function (result) {
                 setTimeout(function(){
                     resolve(
                         debug('Script is Complete...Exiting'),
-                        console.log('Script is Complete...Exiting'),
                         process.exit(0)
                     );
                 }, 1000);
@@ -160,7 +159,7 @@ function webhookShitSeries(title, action, image){
 function toggleSeries(data){
     if(options.perform_action){
         sonarr.put("series", data).then(function (result) {
-            console.log(result.title + ' has been updated');
+            debug(result.title + ' has been updated');
         }, function (err) {
             throw new Error("There was a error processing the request: " + err);
         })
