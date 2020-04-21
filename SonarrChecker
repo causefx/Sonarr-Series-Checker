@@ -1,0 +1,66 @@
+#!/usr/bin/with-contenv bash
+echo 'Starting up script ...... lol... k thnx bye!'
+
+echo '[---------- Checking for Discord Webhook ----------]'
+if [ -z "$DISCORD_URL" ]
+  then
+  echo 'NO DISCORD WEBHOOK SUPPLIED'
+  WEBHOOK=""
+else
+  echo 'Discord Webhook found...'
+  WEBHOOK="-d $DISCORD_URL"
+fi
+
+echo '[---------- Checking for Sonarr URL ----------]'
+if [ -z "$SONARR_URL" ]
+  then
+   echo 'NO SONARR URL SUPPLIED'
+   exit 1
+   SONARRURL=""
+else
+  echo 'Sonarr URL found...'
+  SONARRURL="-u $SONARR_URL"
+fi
+
+echo '[---------- Checking for Sonarr API Key ----------]'
+if [ -z "$SONARR_KEY" ]
+  then
+   echo 'NO SONARR API KEY SUPPLIED'
+   exit 1
+   SONARRKEY=""
+else
+  echo 'Sonarr API Key found...'
+  SONARRKEY="-k $SONARR_KEY"
+fi
+
+echo '[---------- Checking to see if we need to skip Sonarr Series Update ----------]'
+if [ "$ACTION" = true ] ; then
+  echo 'We will skip Sonarr Update'
+  ACTION='-a false'
+else
+  echo 'We will Update Sonarr Series'
+  ACTION='-a true'
+fi
+
+echo '[---------- Checking for CRON ----------]'
+if [ -z "$CRON" ]
+  then
+  echo 'NO CRON SUPPLIED - USING DEFAULT CRON OF: 5 2,11 * * *'
+  CRON='5 2,11 * * *'
+else
+  echo 'CRON found...'
+fi
+
+echo '[---------- Checking for run at startup ----------]'
+if [ "$STARTUP" = true ] ; then
+  echo 'Running at startup now'
+  cd /app && node index $SONARRURL $SONARRKEY $ACTION $WEBHOOK
+else
+  echo 'No need to run at startup'
+fi
+
+echo '[---------- Setting up CRON Job ----------]'
+echo "$CRON    cd /app && node index $SONARRURL $SONARRKEY $ACTION $WEBHOOK" > /etc/crontabs/root
+echo 'CRON Job has been set...'
+echo 'Starting CRON Service now...'
+crond -l 2 -f

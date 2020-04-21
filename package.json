@@ -1,0 +1,19 @@
+{
+  "name": "sonarr-status",
+  "version": "1.0.0",
+  "description": "sonarr status updating",
+  "main": "index.js",
+  "dependencies": {
+    "debug": "^4.1.1",
+    "discord-webhook-node": "^1.0.7",
+    "minimist": "^1.2.5",
+    "sonarr-api": "^0.2.0",
+    "url": "^0.11.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
