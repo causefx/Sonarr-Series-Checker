@@ -79,10 +79,10 @@ sonarr.get("series").then(function (result) {
                 .then(() => {
                     return new Promise((resolve) => {
                         let msg = (options.perform_action) ? 'We have Monitored this series.' : 'We suggest you Monitor this series.';
-
+                        let image = grabImage(series['unmonitored'][key]);
                         setTimeout(function(){
                             resolve(
-                                webhookShitSeries(series['unmonitored'][key]['title'], msg, ''),
+                                webhookShitSeries(series['unmonitored'][key]['title'], msg, image),
                                 series['unmonitored'][key].monitored = true,
                                 toggleSeries(series['unmonitored'][key]),
                                 debug(msg + '... '+series['unmonitored'][key]['title'] + ' | Files/Eps: ' + series['unmonitored'][key]['episodeFileCount'] + '/' + series['unmonitored'][key]['episodeCount'])
