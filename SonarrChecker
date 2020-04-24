@@ -33,13 +33,13 @@ else
   SONARRKEY="-k $SONARR_KEY"
 fi
 
-echo '[---------- Checking to see if we need to skip Sonarr Series Update ----------]'
+echo '[---------- Checking to see if we need to perform Sonarr Series Update ----------]'
 if [ "$ACTION" = true ] ; then
-  echo 'We will skip Sonarr Update'
-  ACTION='-a false'
-else
-  echo 'We will Update Sonarr Series'
+  echo 'We will perform Sonarr Series Update'
   ACTION='-a true'
+else
+  echo 'We will skip Sonarr Series Update'
+  ACTION='-a false'
 fi
 
 echo '[---------- Checking for CRON ----------]'
