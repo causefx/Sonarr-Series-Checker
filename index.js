@@ -57,7 +57,7 @@ sonarr.get("series").then(function (result) {
                 .then(() => {
                     return new Promise((resolve) => {
                         let image = grabImage(series['monitored'][key]);
-                        let msg = (options.perform_action) ? 'We have Unmonitored this series.' : 'We suggest you Unmonitor this series.';
+                        let msg = (options.perform_action) ? 'This Series is no longer being Monitored.' : 'It is suggested that you Unmonitor this Series.';
                         setTimeout(function(){
                             resolve(
                                 webhookShitSeries(series['monitored'][key]['title'], msg, image),
@@ -78,7 +78,7 @@ sonarr.get("series").then(function (result) {
             promise = promise
                 .then(() => {
                     return new Promise((resolve) => {
-                        let msg = (options.perform_action) ? 'We have Monitored this series.' : 'We suggest you Monitor this series.';
+                        let msg = (options.perform_action) ? 'This Series is now being Monitored.' : 'It is suggested that you Monitor this series.';
                         let image = grabImage(series['unmonitored'][key]);
                         setTimeout(function(){
                             resolve(
