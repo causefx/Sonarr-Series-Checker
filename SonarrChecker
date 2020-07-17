@@ -1,5 +1,5 @@
 #!/usr/bin/with-contenv bash
-echo 'Starting up script ...... lol... k thnx bye!'
+echo 'Starting up script ...... lol... k thnx bai!'
 
 echo '[---------- Checking for Discord Webhook ----------]'
 if [ -z "$DISCORD_URL" ]
@@ -35,10 +35,10 @@ fi
 
 echo '[---------- Checking to see if we need to perform Sonarr Series Update ----------]'
 if [ "$ACTION" = true ] ; then
-  echo 'We will perform Sonarr Series Update'
+  echo 'Performing Sonarr Series Update...'
   ACTION='-a true'
 else
-  echo 'We will skip Sonarr Series Update'
+  echo 'Skipping Sonarr Series Update...'
   ACTION='-a false'
 fi
 
@@ -53,14 +53,14 @@ fi
 
 echo '[---------- Checking for run at startup ----------]'
 if [ "$STARTUP" = true ] ; then
-  echo 'Running at startup now'
+  echo 'Performing the startup scan now...'
   cd /app && node index $SONARRURL $SONARRKEY $ACTION $WEBHOOK
 else
-  echo 'No need to run at startup'
+  echo 'Skipping the startup scan..'
 fi
 
 echo '[---------- Setting up CRON Job ----------]'
 echo "$CRON    cd /app && node index $SONARRURL $SONARRKEY $ACTION $WEBHOOK" > /etc/crontabs/root
 echo 'CRON Job has been set...'
-echo 'Starting CRON Service now...'
+echo 'Starting the CRON Service now...'
 crond -l 2 -f
