@@ -1,6 +1,6 @@
-FROM lsiobase/alpine:3.10
+FROM lsiobase/alpine:3.12
 
-MAINTAINER yomama
+LABEL maintainer="causefx"
 
 # Add local files
 COPY ./ /app
