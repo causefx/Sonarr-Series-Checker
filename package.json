@@ -6,7 +6,7 @@
   "dependencies": {
     "debug": "^4.1.1",
     "discord-webhook-node": "^1.0.7",
-    "minimist": "^1.2.5",
+    "minimist": "^1.2.6",
     "sonarr-api": "^0.2.0",
     "url": "^0.11.0"
   },
