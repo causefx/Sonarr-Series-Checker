@@ -33,10 +33,10 @@ fi
 echo '[---------- Checking to see if we need to perform Sonarr Series Update ----------]'
 if [[ ${ACTION} == 'true' ]]; then
     echo 'Performing Sonarr Series Update...'
-    ACTION='-a true'
+    SETACTION='-a true'
 else
     echo 'Skipping Sonarr Series Update...'
-    ACTION='-a false'
+    SETACTION='-a false'
 fi
 
 echo '[---------- Checking for CRON ----------]'
@@ -50,13 +50,13 @@ fi
 echo '[---------- Checking for run at startup ----------]'
 if [[ ${STARTUP} == 'true' ]]; then
     echo 'Performing the startup scan now...'
-    cd /app && node index "${SONARRURL}" "${SONARRKEY}" "${ACTION}" "${WEBHOOK}"
+    cd /app && node index "${SONARRURL}" "${SONARRKEY}" "${SETACTION}" "${WEBHOOK}"
 else
     echo 'Skipping the startup scan..'
 fi
 
 echo '[---------- Setting up CRON Job ----------]'
-echo "${CRON}    cd /app && node index ${SONARRURL} ${SONARRKEY} ${ACTION} ${WEBHOOK}" > /etc/crontabs/root
+echo "${CRON}    cd /app && node index ${SONARRURL} ${SONARRKEY} ${SETACTION} ${WEBHOOK}" > /etc/crontabs/root
 echo 'CRON Job has been set...'
 echo 'Starting the CRON Service now...'
 crond -l 2 -f
