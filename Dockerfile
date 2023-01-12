@@ -20,4 +20,7 @@ RUN apk add --no-cache \
 	npm \
 	&& npm install
 
-CMD ["/usr/bin/with-contenv","/app/SonarrChecker.sh"]
+# Make script executable
+RUN chmod a+x /app/SonarrChecker.sh
+
+CMD ["/bin/bash","-c","/app/SonarrChecker.sh; /bin/bash"]
