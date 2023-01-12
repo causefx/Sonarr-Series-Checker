@@ -8,8 +8,8 @@ WORKDIR /app
 
 # Install packages
 RUN apk add --no-cache \
-	nodejs-npm \
-	nodejs-current \
+	nodejs \
+	npm \
 	&& npm install
 
 CMD sh /app/SonarrChecker
