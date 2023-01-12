@@ -50,14 +50,14 @@ sonarr.get("series").then(function (result) {
     });
     debug('Monitored Series List');
     Object.keys(series['monitored']).forEach(function (key){
-        if(series['monitored'][key]['status'] === 'ended' && series['monitored'][key]['statistics']['episodeCount'] === series['monitored'][key]['statistics']['episodeFileCount']){
+        if(series['monitored'][key]['status'] === 'ended' && series['monitored'][key]['statistics']['episodeCount'] != 0 && series['monitored'][key]['statistics']['episodeCount'] === series['monitored'][key]['statistics']['episodeFileCount']){
             debug(series['monitored'][key]['title']);
             actions['unmonitor'].push(series['monitored'][key]);
             promise = promise
                 .then(() => {
                     return new Promise((resolve) => {
                         let image = grabImage(series['monitored'][key]);
-                        let msg = (options.perform_action) ? 'This Series is no longer being Monitored.' : 'It is suggested that you Unmonitor this Series.';
+                        let msg = (options.perform_action) ? 'This Series is no longer being Monitored' : 'It is suggested that you Unmonitor this Series';
                         setTimeout(function(){
                             resolve(
                                 webhookShitSeries(series['monitored'][key]['title'], msg, image),
@@ -78,7 +78,7 @@ sonarr.get("series").then(function (result) {
             promise = promise
                 .then(() => {
                     return new Promise((resolve) => {
-                        let msg = (options.perform_action) ? 'This Series is now being Monitored.' : 'It is suggested that you Monitor this series.';
+                        let msg = (options.perform_action) ? 'This Series is now being Monitored' : 'It is suggested that you Monitor this series';
                         let image = grabImage(series['unmonitored'][key]);
                         setTimeout(function(){
                             resolve(
@@ -97,7 +97,7 @@ sonarr.get("series").then(function (result) {
             return new Promise((resolve) => {
                 setTimeout(function(){
                     resolve(
-                        debug('Script is Complete...Exiting'),
+                        debug('Scan is now complete... Exiting'),
                         process.exit(0)
                     );
                 }, 1000);
