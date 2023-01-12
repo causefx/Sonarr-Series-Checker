@@ -3,7 +3,7 @@ process.env.DEBUG = '*';
 const { Webhook, MessageBuilder } = require('discord-webhook-node');
 const url = require('url');
 const debug = require('debug')('sonarrStatus');
-const SonarrAPI = require('sonarr-api');
+const SonarrAPI = require('./lib/sonarr-api/lib/api.js');
 const argv = require('minimist')(process.argv.slice(2));
 
 const options = {
@@ -50,7 +50,7 @@ sonarr.get("series").then(function (result) {
     });
     debug('Monitored Series List');
     Object.keys(series['monitored']).forEach(function (key){
-        if(series['monitored'][key]['status'] === 'ended' && series['monitored'][key]['episodeCount'] === series['monitored'][key]['episodeFileCount']){
+        if(series['monitored'][key]['status'] === 'ended' && series['monitored'][key]['statistics']['episodeCount'] === series['monitored'][key]['statistics']['episodeFileCount']){
             debug(series['monitored'][key]['title']);
             actions['unmonitor'].push(series['monitored'][key]);
             promise = promise
@@ -63,7 +63,7 @@ sonarr.get("series").then(function (result) {
                                 webhookShitSeries(series['monitored'][key]['title'], msg, image),
                                 series['monitored'][key].monitored = false,
                                 toggleSeries(series['monitored'][key]),
-                                debug(msg + '... '+series['monitored'][key]['title'] + ' | Files/Eps: ' + series['monitored'][key]['episodeFileCount'] + '/' + series['monitored'][key]['episodeCount'])
+                                debug(msg + ' ... '+series['monitored'][key]['title'] + ' | Files/Eps: ' + series['monitored'][key]['statistics']['episodeFileCount'] + '/' + series['monitored'][key]['statistics']['episodeCount'])
                             );
                         }, options.perform_action ? 5000 : 1000);
                     })
@@ -85,7 +85,7 @@ sonarr.get("series").then(function (result) {
                                 webhookShitSeries(series['unmonitored'][key]['title'], msg, image),
                                 series['unmonitored'][key].monitored = true,
                                 toggleSeries(series['unmonitored'][key]),
-                                debug(msg + '... '+series['unmonitored'][key]['title'] + ' | Files/Eps: ' + series['unmonitored'][key]['episodeFileCount'] + '/' + series['unmonitored'][key]['episodeCount'])
+                                debug(msg + '... '+series['unmonitored'][key]['title'] + ' | Files/Eps: ' + series['unmonitored'][key]['statistics']['episodeFileCount'] + '/' + series['unmonitored'][key]['statistics']['episodeCount'])
                             );
                         }, options.perform_action ? 5000 : 1000);
                     })
