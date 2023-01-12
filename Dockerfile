@@ -1,4 +1,4 @@
-FROM lsiobase/alpine:3.12
+FROM lsiobase/alpine:3.17
 
 LABEL maintainer="causefx"
 
