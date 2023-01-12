@@ -17,7 +17,7 @@ docker create \
   -e ACTION="false" \ # Optional; Whether or not you want Sonarr Checker to action the discovered Series
   -e STARTUP="false" \ # Optional; Perform scan on startup
   -e CRON="5 2,11 * * *" \ # Optional; Specify when you want the scan to run via cronjob
-  causefx/sonarrchecker
+  ghcr.io/causefx/sonarrchecker
 ```
 
 ### Docker-Compose
@@ -25,7 +25,7 @@ docker create \
 ```yaml
   sonarr-checker:
     container_name: sonarr-checker
-    image: causefx/sonarrchecker
+    image: ghcr.io/causefx/sonarrchecker
     restart: on-failure
     environment:
       - SONARR_URL=""
