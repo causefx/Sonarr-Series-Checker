@@ -1,6 +1,6 @@
-FROM lsiobase/alpine:3.10
+FROM ghcr.io/linuxserver/baseimage-alpine:3.17
 
-MAINTAINER yomama
+LABEL maintainer="causefx"
 
 # Add local files
 COPY ./ /app
