@@ -9,7 +9,7 @@ const argv = require('minimist')(process.argv.slice(2));
 const options = {
     "url": argv.u || false,
     "api": argv.k || false,
-    "perform_action":    argv.a ? (argv.a == 'true' ? true : false) : false,
+    "perform_action":    argv.a ? ((argv.a === 'true' || argv.a === true)) : false,
     "discord_webhook": argv.d || false
 };
 
