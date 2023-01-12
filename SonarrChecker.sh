@@ -50,7 +50,7 @@ fi
 echo '[---------- Checking for run at startup ----------]'
 if [[ ${STARTUP} == 'true' ]]; then
     echo 'Performing the startup scan now...'
-    cd /app && node index "${SONARRURL}" "${SONARRKEY}" "${SETACTION}" "${WEBHOOK}"
+    cd /app && node index ${SONARRURL} ${SONARRKEY} ${SETACTION} ${WEBHOOK}
 else
     echo 'Skipping the startup scan..'
 fi
