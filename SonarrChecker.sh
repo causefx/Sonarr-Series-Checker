@@ -39,6 +39,15 @@ else
     SETACTION='-a false'
 fi
 
+echo '[---------- Checking to see if we need to perform Sonarr Series Season Update ----------]'
+if [[ ${SEASON_ACTION} == 'true' ]]; then
+    echo 'Performing Sonarr Series Season Update...'
+    SETSEASONACTION='-s true'
+else
+    echo 'Skipping Sonarr Series Season Update...'
+    SETSEASONACTION='-s false'
+fi
+
 echo '[---------- Checking for CRON ----------]'
 if [[ -z ${CRON} ]]; then
     echo 'NO CRON SUPPLIED - USING DEFAULT CRON OF: 5 2,11 * * *'
@@ -50,13 +59,13 @@ fi
 echo '[---------- Checking for run at startup ----------]'
 if [[ ${STARTUP} == 'true' ]]; then
     echo 'Performing the startup scan now...'
-    cd /app && node index ${SONARRURL} ${SONARRKEY} ${SETACTION} ${WEBHOOK}
+    cd /app && node index ${SONARRURL} ${SONARRKEY} ${SETACTION} ${SETSEASONACTION} ${WEBHOOK}
 else
     echo 'Skipping the startup scan..'
 fi
 
 echo '[---------- Setting up CRON Job ----------]'
-echo "${CRON}    cd /app && node index ${SONARRURL} ${SONARRKEY} ${SETACTION} ${WEBHOOK}" > /etc/crontabs/root
+echo "${CRON}    cd /app && node index ${SONARRURL} ${SONARRKEY} ${SETACTION} ${SETSEASONACTION} ${WEBHOOK}" > /etc/crontabs/root
 echo 'CRON Job has been set...'
 echo 'Starting the CRON Service now...'
 crond -l 2 -f

@@ -10,6 +10,7 @@ const options = {
     "url": argv.u || false,
     "api": argv.k || false,
     "perform_action":    argv.a ? ((argv.a === 'true' || argv.a === true)) : false,
+    "season_action":    argv.s ? ((argv.s === 'true' || argv.s === true)) : false,
     "discord_webhook": argv.d || false
 };
 
@@ -20,6 +21,8 @@ if(!options.api) throw new Error("API cannot be empty");
 debug('Done Validating Options');
 if(options.perform_action) debug('Action variable found - Will perform Update on Sonarr Series')
 if(!options.perform_action) debug('Action variable not found - Will skip Update on Sonarr Series');
+if(options.season_action) debug('Season Action variable found - Will perform Update on Sonarr Series Seasons')
+if(!options.season_action) debug('Season Action variable not found - Will skip Update on Sonarr Series Seasons');
 if(options.discord_webhook) debug('Discord variable found - Will send Discord messages')
 if(!options.discord_webhook) debug('Discord variable not found - Will skip Discord messages');
 const sonarrURL = qualifyURL(options.url, true);
@@ -100,7 +103,7 @@ sonarr.get("series").then(function (result) {
                         debug('Scan is now complete... Exiting'),
                         process.exit(0)
                     );
-                }, 1000);
+                }, 2500);
             })
         })
 }).catch(function (err) {
@@ -158,6 +161,12 @@ function webhookShitSeries(title, action, image){
 }
 function toggleSeries(data){
     if(options.perform_action){
+        if(options.season_action){
+            data['seasons'].forEach(function(season, index){
+                season.monitored = data.monitored;
+                data['seasons'][index] = season;
+            });
+        }
         sonarr.put("series", data).then(function (result) {
             debug(result.title + ' has been updated');
         }, function (err) {
