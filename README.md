@@ -15,6 +15,7 @@ docker create \
   -e SONARR_KEY="" \ # The API key for your Sonarr instance
   -e DISCORD_URL="" \ # Optional; The Discord webhook URL you want notifications to go to
   -e ACTION='false' \ # Optional; Whether or not you want Sonarr Checker to action the discovered Series
+  -e SEASON_ACTION='false' \ # Optional; Whether or not you want Sonarr Checker to action the discovered Series Seasons
   -e STARTUP='false' \ # Optional; Perform scan on startup
   -e CRON="5 2,11 * * *" \ # Optional; Specify when you want the scan to run via cronjob
   ghcr.io/causefx/sonarrchecker
@@ -32,6 +33,7 @@ docker create \
       - SONARR_KEY=""
       - DISCORD_URL=""
       - ACTION='false'
+      - SEASON_ACTION='false'
       - STARTUP='false'
       - CRON=5 2,11 * * *"
     volumes:
