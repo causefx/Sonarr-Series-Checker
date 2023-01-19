@@ -12,7 +12,9 @@ const options = {
     "perform_action":    argv.a ? ((argv.a === 'true' || argv.a === true)) : false,
     "season_action":    argv.s ? ((argv.s === 'true' || argv.s === true)) : false,
     "discord_webhook": argv.d || false,
-    "discord_notification_type": argv.t || 'both'
+    "discord_notification_type": argv.t || 'both',
+    "monitored_ignore_tag": argv.m || null,
+    "unmonitored_ignore_tag": argv.n || null
 };
 
 debug('Validating Options... Using options:');
@@ -29,6 +31,20 @@ switch (options.discord_notification_type){
         break;
     default:
         options.discord_notification_type = 'both';
+}
+
+// Check Ignore Ids
+if(options.monitored_ignore_tag !== null){
+    options.monitored_ignore_tag = parseInt(options.monitored_ignore_tag);
+    if(isNaN(options.monitored_ignore_tag)){
+        options.monitored_ignore_tag = null
+    }
+}
+if(options.unmonitored_ignore_tag !== null){
+    options.unmonitored_ignore_tag = parseInt(options.unmonitored_ignore_tag);
+    if(isNaN(options.unmonitored_ignore_tag)){
+        options.unmonitored_ignore_tag = null
+    }
 }
 debug(options);
 
@@ -51,8 +67,12 @@ const sonarr = new SonarrAPI({
     port: sonarrURL.port,
     urlBase: sonarrURL.path
 });
-
 let promise = Promise.resolve();
+// list Sonarr Tags
+sonarr.get("tag").then(function (result) {
+    debug('Listing Sonarr Tags...')
+    debug(result);
+});
 // get Sonarr Series
 sonarr.get("series").then(function (result) {
     let series = {
@@ -75,21 +95,25 @@ sonarr.get("series").then(function (result) {
         if(series['monitored'][key]['status'] === 'ended' && series['monitored'][key]['statistics']['episodeCount'] != 0 && series['monitored'][key]['statistics']['episodeCount'] === series['monitored'][key]['statistics']['episodeFileCount']){
             debug(series['monitored'][key]['title']);
             actions['unmonitor'].push(series['monitored'][key]);
-            promise = promise
-                .then(() => {
-                    return new Promise((resolve) => {
-                        let image = grabImage(series['monitored'][key]);
-                        let msg = (options.perform_action) ? 'This Series is no longer being Monitored' : 'It is suggested that you Unmonitor this Series';
-                        setTimeout(function(){
-                            resolve(
-                                webhookShitSeries('unmonitored', series['monitored'][key]['title'], msg, image),
-                                series['monitored'][key].monitored = false,
-                                toggleSeries(series['monitored'][key]),
-                                debug(msg + ' ... '+series['monitored'][key]['title'] + ' | Files/Eps: ' + series['monitored'][key]['statistics']['episodeFileCount'] + '/' + series['monitored'][key]['statistics']['episodeCount'])
-                            );
-                        }, options.perform_action ? 5000 : 1000);
+            if(options.monitored_ignore_tag === null || !series['monitored'][key]['tags'].includes(options.monitored_ignore_tag)){
+                promise = promise
+                    .then(() => {
+                        return new Promise((resolve) => {
+                            let image = grabImage(series['monitored'][key]);
+                            let msg = (options.perform_action) ? 'This Series is no longer being Monitored' : 'It is suggested that you Unmonitor this Series';
+                            setTimeout(function(){
+                                resolve(
+                                    webhookShitSeries('unmonitored', series['monitored'][key]['title'], msg, image),
+                                    series['monitored'][key].monitored = false,
+                                    toggleSeries(series['monitored'][key]),
+                                    debug(msg + ' ... '+series['monitored'][key]['title'] + ' | Files/Eps: ' + series['monitored'][key]['statistics']['episodeFileCount'] + '/' + series['monitored'][key]['statistics']['episodeCount'])
+                                );
+                            }, options.perform_action ? 5000 : 1000);
+                        })
                     })
-                })
+            }else{
+                debug('This Series is on the ignored tag list');
+            }
         }
     });
     debug('Unmonitored Series List');
@@ -97,21 +121,25 @@ sonarr.get("series").then(function (result) {
         if(series['unmonitored'][key]['status'] === 'continuing'){
             debug(series['unmonitored'][key]['title']);
             actions['monitor'].push(series['unmonitored'][key]);
-            promise = promise
-                .then(() => {
-                    return new Promise((resolve) => {
-                        let msg = (options.perform_action) ? 'This Series is now being Monitored' : 'It is suggested that you Monitor this series';
-                        let image = grabImage(series['unmonitored'][key]);
-                        setTimeout(function(){
-                            resolve(
-                                webhookShitSeries('monitored', series['unmonitored'][key]['title'], msg, image),
-                                series['unmonitored'][key].monitored = true,
-                                toggleSeries(series['unmonitored'][key]),
-                                debug(msg + '... '+series['unmonitored'][key]['title'] + ' | Files/Eps: ' + series['unmonitored'][key]['statistics']['episodeFileCount'] + '/' + series['unmonitored'][key]['statistics']['episodeCount'])
-                            );
-                        }, options.perform_action ? 5000 : 1000);
+            if(options.unmonitored_ignore_tag === null || !series['unmonitored'][key]['tags'].includes(options.unmonitored_ignore_tag)) {
+                promise = promise
+                    .then(() => {
+                        return new Promise((resolve) => {
+                            let msg = (options.perform_action) ? 'This Series is now being Monitored' : 'It is suggested that you Monitor this series';
+                            let image = grabImage(series['unmonitored'][key]);
+                            setTimeout(function () {
+                                resolve(
+                                    webhookShitSeries('monitored', series['unmonitored'][key]['title'], msg, image),
+                                    series['unmonitored'][key].monitored = true,
+                                    toggleSeries(series['unmonitored'][key]),
+                                    debug(msg + '... ' + series['unmonitored'][key]['title'] + ' | Files/Eps: ' + series['unmonitored'][key]['statistics']['episodeFileCount'] + '/' + series['unmonitored'][key]['statistics']['episodeCount'])
+                                );
+                            }, options.perform_action ? 5000 : 1000);
+                        })
                     })
-                })
+            }else{
+                debug('This Series is on the ignored tag list');
+            }
         }
     });
     promise = promise

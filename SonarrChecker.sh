@@ -39,6 +39,24 @@ else
     SONARRKEY="-k ${SONARR_KEY}"
 fi
 
+echo '[---------- Checking for Monitored Ignore Tag Id ----------]'
+if [[ -z ${MONITORED_IGNORE_TAG_ID} ]]; then
+    echo 'No Ignore Tag Id Supplied'
+    MONITORED_IGNORE_TAG=''
+else
+    echo 'Tag Id found...'
+    MONITORED_IGNORE_TAG="-m ${MONITORED_IGNORE_TAG_ID}"
+fi
+
+echo '[---------- Checking for Unmonitored Ignore Tag Id ----------]'
+if [[ -z ${UNMONITORED_IGNORE_TAG_ID} ]]; then
+    echo 'No Ignore Tag Id Supplied'
+    UNMONITORED_IGNORE_TAG=''
+else
+    echo 'Tag Id found...'
+    UNMONITORED_IGNORE_TAG="-n ${UNMONITORED_IGNORE_TAG_ID}"
+fi
+
 echo '[---------- Checking to see if we need to perform Sonarr Series Update ----------]'
 if [[ ${ACTION} == 'true' ]]; then
     echo 'Performing Sonarr Series Update...'
@@ -68,13 +86,13 @@ fi
 echo '[---------- Checking for run at startup ----------]'
 if [[ ${STARTUP} == 'true' ]]; then
     echo 'Performing the startup scan now...'
-    cd /app && node index ${SONARRURL} ${SONARRKEY} ${SETACTION} ${SETSEASONACTION} ${WEBHOOK} ${WEBHOOK_NOTIFICATION_TYPE}
+    cd /app && node index ${SONARRURL} ${SONARRKEY} ${SETACTION} ${SETSEASONACTION} ${WEBHOOK} ${WEBHOOK_NOTIFICATION_TYPE} ${MONITORED_IGNORE_TAG} ${UNMONITORED_IGNORE_TAG}
 else
     echo 'Skipping the startup scan..'
 fi
 
 echo '[---------- Setting up CRON Job ----------]'
-echo "${CRON}    cd /app && node index ${SONARRURL} ${SONARRKEY} ${SETACTION} ${SETSEASONACTION} ${WEBHOOK} ${WEBHOOK_NOTIFICATION_TYPE}" > /etc/crontabs/root
+echo "${CRON}    cd /app && node index ${SONARRURL} ${SONARRKEY} ${SETACTION} ${SETSEASONACTION} ${WEBHOOK} ${WEBHOOK_NOTIFICATION_TYPE} ${MONITORED_IGNORE_TAG} ${UNMONITORED_IGNORE_TAG}" > /etc/crontabs/root
 echo 'CRON Job has been set...'
 echo 'Starting the CRON Service now...'
 crond -l 2 -f
