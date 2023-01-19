@@ -12,11 +12,11 @@ fi
 
 echo '[---------- Checking to see if Discord Notification type is set ----------]'
 if [[ -z ${DISCORD_NOTIFICATION_TYPE} ]]; then
-    echo 'Setting Discord Notification Type...'
-    WEBHOOK_NOTIFICATION_TYPE="-t ${DISCORD_NOTIFICATION_TYPE}"
-else
     echo 'No Discord Notification Type set'
     WEBHOOK_NOTIFICATION_TYPE="-t both"
+else
+    echo 'Setting Discord Notification Type...'
+    WEBHOOK_NOTIFICATION_TYPE="-t ${DISCORD_NOTIFICATION_TYPE}"
 fi
 
 echo '[---------- Checking for Sonarr URL ----------]'
