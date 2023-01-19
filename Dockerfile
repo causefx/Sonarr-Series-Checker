@@ -4,6 +4,7 @@ LABEL maintainer="causefx"
 
 # Environment variables
 ENV DISCORD_URL ''
+ENV DISCORD_NOTIFICATION_TYPE ''
 ENV SONARR_URL ''
 ENV SONARR_KEY ''
 ENV ACTION ''

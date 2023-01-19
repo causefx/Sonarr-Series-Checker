@@ -11,20 +11,39 @@ const options = {
     "api": argv.k || false,
     "perform_action":    argv.a ? ((argv.a === 'true' || argv.a === true)) : false,
     "season_action":    argv.s ? ((argv.s === 'true' || argv.s === true)) : false,
-    "discord_webhook": argv.d || false
+    "discord_webhook": argv.d || false,
+    "discord_notification_type": argv.t || 'both'
 };
 
 debug('Validating Options... Using options:');
+// Check Notification Type
+options.discord_notification_type = options.discord_notification_type.toLowerCase();
+switch (options.discord_notification_type){
+    case 'u':
+    case 'unmonitored':
+        options.discord_notification_type = 'unmonitored';
+        break;
+    case 'm':
+    case 'monitored':
+        options.discord_notification_type = 'monitored';
+        break;
+    default:
+        options.discord_notification_type = 'both';
+}
 debug(options);
+
 if(!options.url) throw new Error("URL cannot be empty");
 if(!options.api) throw new Error("API cannot be empty");
+
 debug('Done Validating Options');
-if(options.perform_action) debug('Action variable found - Will perform Update on Sonarr Series')
+if(options.perform_action) debug('Action variable found - Will perform Update on Sonarr Series');
 if(!options.perform_action) debug('Action variable not found - Will skip Update on Sonarr Series');
-if(options.season_action) debug('Season Action variable found - Will perform Update on Sonarr Series Seasons')
+if(options.season_action) debug('Season Action variable found - Will perform Update on Sonarr Series Seasons');
 if(!options.season_action) debug('Season Action variable not found - Will skip Update on Sonarr Series Seasons');
-if(options.discord_webhook) debug('Discord variable found - Will send Discord messages')
+debug('Notification type set as: ' + options.discord_notification_type);
+if(options.discord_webhook) debug('Discord variable found - Will send Discord messages');
 if(!options.discord_webhook) debug('Discord variable not found - Will skip Discord messages');
+
 const sonarrURL = qualifyURL(options.url, true);
 const sonarr = new SonarrAPI({
     hostname: sonarrURL.host,
@@ -63,7 +82,7 @@ sonarr.get("series").then(function (result) {
                         let msg = (options.perform_action) ? 'This Series is no longer being Monitored' : 'It is suggested that you Unmonitor this Series';
                         setTimeout(function(){
                             resolve(
-                                webhookShitSeries(series['monitored'][key]['title'], msg, image),
+                                webhookShitSeries('unmonitored', series['monitored'][key]['title'], msg, image),
                                 series['monitored'][key].monitored = false,
                                 toggleSeries(series['monitored'][key]),
                                 debug(msg + ' ... '+series['monitored'][key]['title'] + ' | Files/Eps: ' + series['monitored'][key]['statistics']['episodeFileCount'] + '/' + series['monitored'][key]['statistics']['episodeCount'])
@@ -85,7 +104,7 @@ sonarr.get("series").then(function (result) {
                         let image = grabImage(series['unmonitored'][key]);
                         setTimeout(function(){
                             resolve(
-                                webhookShitSeries(series['unmonitored'][key]['title'], msg, image),
+                                webhookShitSeries('monitored', series['unmonitored'][key]['title'], msg, image),
                                 series['unmonitored'][key].monitored = true,
                                 toggleSeries(series['unmonitored'][key]),
                                 debug(msg + '... '+series['unmonitored'][key]['title'] + ' | Files/Eps: ' + series['unmonitored'][key]['statistics']['episodeFileCount'] + '/' + series['unmonitored'][key]['statistics']['episodeCount'])
@@ -146,8 +165,8 @@ function qualifyURL(addr, obj = false)
     }
     return (obj) ? object : protocol + '//' + host + port + path + query;
 }
-function webhookShitSeries(title, action, image){
-    if(options.discord_webhook){
+function webhookShitSeries(type, title, action, image){
+    if(options.discord_webhook && (options.discord_notification_type === 'both' || options.discord_notification_type === type)){
         const hook = new Webhook(options.discord_webhook);
         let embed = new MessageBuilder()
             .setTitle(title)

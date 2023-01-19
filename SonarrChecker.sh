@@ -10,6 +10,15 @@ else
     WEBHOOK="-d ${DISCORD_URL}"
 fi
 
+echo '[---------- Checking to see if Discord Notification type is set ----------]'
+if [[ -z ${DISCORD_NOTIFICATION_TYPE} ]]; then
+    echo 'Setting Discord Notification Type...'
+    WEBHOOK_NOTIFICATION_TYPE="-t ${DISCORD_NOTIFICATION_TYPE}"
+else
+    echo 'No Discord Notification Type set'
+    WEBHOOK_NOTIFICATION_TYPE="-t both"
+fi
+
 echo '[---------- Checking for Sonarr URL ----------]'
 if [[ -z ${SONARR_URL} ]]; then
     echo 'NO SONARR URL SUPPLIED'
@@ -59,13 +68,13 @@ fi
 echo '[---------- Checking for run at startup ----------]'
 if [[ ${STARTUP} == 'true' ]]; then
     echo 'Performing the startup scan now...'
-    cd /app && node index ${SONARRURL} ${SONARRKEY} ${SETACTION} ${SETSEASONACTION} ${WEBHOOK}
+    cd /app && node index ${SONARRURL} ${SONARRKEY} ${SETACTION} ${SETSEASONACTION} ${WEBHOOK} ${WEBHOOK_NOTIFICATION_TYPE}
 else
     echo 'Skipping the startup scan..'
 fi
 
 echo '[---------- Setting up CRON Job ----------]'
-echo "${CRON}    cd /app && node index ${SONARRURL} ${SONARRKEY} ${SETACTION} ${SETSEASONACTION} ${WEBHOOK}" > /etc/crontabs/root
+echo "${CRON}    cd /app && node index ${SONARRURL} ${SONARRKEY} ${SETACTION} ${SETSEASONACTION} ${WEBHOOK} ${WEBHOOK_NOTIFICATION_TYPE}" > /etc/crontabs/root
 echo 'CRON Job has been set...'
 echo 'Starting the CRON Service now...'
 crond -l 2 -f
