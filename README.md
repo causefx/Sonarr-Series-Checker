@@ -9,8 +9,8 @@ A basic script to check your Sonarr instance for any Series that are continuing,
 ```bash
 docker create \
   --name=sonarr-checker \
-  -v /etc/localtime:/etc/localtime:ro \ # Needed so that the container matches the TZ of the Host for the cronjob
-  -v /etc/localtime:/etc/timezone:ro \ # Needed so that the container matches the TZ of the Host for the cronjob
+  -v /etc/localtime:/etc/localtime:ro \ # Needed so that the Container matches the TZ of the Host for the cronjob
+  -v /etc/localtime:/etc/timezone:ro \ # Needed so that the Container matches the TZ of the Host for the cronjob
   -e SONARR_URL="" \
   -e SONARR_KEY="" \
   -e MONITORED_IGNORE_TAG_ID="" \
@@ -43,8 +43,8 @@ docker create \
       - STARTUP='false'
       - CRON=5 2,11 * * *"
     volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "/etc/localtime:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro" # Needed so that the Container matches the TZ of the Host for the cronjob
+      - "/etc/localtime:/etc/timezone:ro" # Needed so that the Container matches the TZ of the Host for the cronjob
 ```
 
 ### Environment Variables
